@@ -1,0 +1,32 @@
+version: '3.3'
+services:
+    sqlserver:
+        environment:
+            - ACCEPT_EULA=Y
+            - 'MSSQL_SA_PASSWORD=myStrongPassword12#'
+        ports:
+            - '1433:1433'
+        volumes:
+            - 'sqldata:/var/opt/mssqsl/sqlserver'
+        container_name: sqlserver
+        image: mcr.microsoft.com/mssql/server
+        deploy:
+          resources:
+            reservations:
+              cpus: '2'
+              memory: 2GB
+    webapp:
+        container_name: web-app
+        build:
+          dockerfile: ./Dockerfile
+        image: teddyzerobazarscr.azurecr.io/softunibazar
+        domainname: teddyzero
+        ports:
+            - '80:80'
+        restart: on-failure
+volumes:
+  sqldata:
+    driver: azure_file
+    driver_opts:
+      share_name: sql-volume
+      storage_account_name: teddyzerobazarsa
